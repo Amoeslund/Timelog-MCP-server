@@ -1,6 +1,6 @@
 {
   "name": "timelog-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MCP server for Timelog time registrations",
   "type": "module",
   "bin": {
@@ -24,6 +24,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Amoeslund/Timelog-MCP-server.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
