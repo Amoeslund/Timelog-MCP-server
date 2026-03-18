@@ -1,18 +1,24 @@
 {
   "name": "timelog-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for Timelog time registrations",
   "type": "module",
   "bin": {
-    "timelog-mcp": "./dist/index.js"
+    "timelog-mcp": "dist/index.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod 755 dist/index.js",
     "start": "node dist/index.js",
     "prepublishOnly": "npm run build"
   },
-  "files": ["dist"],
-  "keywords": ["mcp", "timelog", "time-tracking"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "mcp",
+    "timelog",
+    "time-tracking"
+  ],
   "author": "Amoeslund",
   "license": "ISC",
   "repository": {
