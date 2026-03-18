@@ -9,9 +9,10 @@ export function loadConfig(): TimelogConfig {
     throw new Error("TIMELOG_PAT environment variable is required");
   }
 
-  const baseUrl =
-    process.env.TIMELOG_BASE_URL ??
-    `https://app3.timelog.com/${process.env.TIMELOG_ACCOUNT ?? "impact"}/api`;
+  const baseUrl = process.env.TIMELOG_BASE_URL;
+  if (!baseUrl) {
+    throw new Error("TIMELOG_BASE_URL environment variable is required");
+  }
 
   return { pat, baseUrl };
 }

@@ -30,7 +30,7 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
       "args": ["-y", "timelog-mcp"],
       "env": {
         "TIMELOG_PAT": "<your-personal-access-token>",
-        "TIMELOG_BASE_URL": "https://app3.timelog.com/<your-account>/api"
+        "TIMELOG_BASE_URL": "https://app[X].timelog.com/<your-account>/api"
       }
     }
   }
@@ -56,7 +56,7 @@ Then point your MCP config at the built file:
       "args": ["/path/to/Timelog-MCP-server/dist/index.js"],
       "env": {
         "TIMELOG_PAT": "<your-personal-access-token>",
-        "TIMELOG_BASE_URL": "https://app3.timelog.com/<your-account>/api"
+        "TIMELOG_BASE_URL": "https://app[X].timelog.com/<your-account>/api"
       }
     }
   }
@@ -68,7 +68,7 @@ Then point your MCP config at the built file:
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `TIMELOG_PAT` | Yes | Personal Access Token from https://login.timelog.com/personaltoken |
-| `TIMELOG_BASE_URL` | Yes | API base URL, e.g. `https://app3.timelog.com/impact/api` |
+| `TIMELOG_BASE_URL` | Yes | API base URL: `https://app[X].timelog.com/<your-account>/api` (see [Timelog docs](https://api.timelog.com/rest/swagger)) |
 
 ## License
 
