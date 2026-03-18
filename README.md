@@ -63,12 +63,22 @@ Then point your MCP config at the built file:
 }
 ```
 
+## Configuration
+
+### Personal Access Token
+
+Generate a PAT at https://login.timelog.com/personaltoken.
+
+### Base URL
+
+Your URL follows the pattern `https://app[X].timelog.com/<your-account>/api` where `[X]` is a server number (1–10) and `<your-account>` is your Timelog account name. See the [Timelog API docs](https://api.timelog.com/rest/swagger) for details.
+
 ## Environment Variables
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `TIMELOG_PAT` | Yes | Personal Access Token from https://login.timelog.com/personaltoken |
-| `TIMELOG_BASE_URL` | Yes | API base URL: `https://app[X].timelog.com/<your-account>/api` (see [Timelog docs](https://api.timelog.com/rest/swagger)) |
+| `TIMELOG_PAT` | Yes | Personal Access Token (see above) |
+| `TIMELOG_BASE_URL` | Yes | API base URL (see above) |
 
 ## License
 
