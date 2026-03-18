@@ -18,7 +18,7 @@ export function registerCreateTimeRegistration(server: McpServer, client: Timelo
         Date: z.string().describe("Date of the registration, format YYYY-MM-DD"),
         Hours: z.number().describe("Number of hours to register"),
         Comment: z.string().optional().describe("Comment for the registration"),
-        JiraId: z.string().optional().describe("JIRA ticket ID (e.g. SGI-82108)"),
+        JiraId: z.string().optional().describe("JIRA ticket ID (e.g. XXX-1234)"),
         Billable: z.boolean().optional().describe("Whether this time is billable (default from task settings)"),
       }),
     },
