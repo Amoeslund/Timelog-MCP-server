@@ -18,21 +18,27 @@ export function registerCreateTimeRegistration(server: McpServer, client: Timelo
         Date: z.string().describe("Date of the registration, format YYYY-MM-DD"),
         Hours: z.number().describe("Number of hours to register"),
         Comment: z.string().optional().describe("Comment for the registration"),
+        JiraId: z.string().optional().describe("JIRA ticket ID (e.g. SGI-82108)"),
         Billable: z.boolean().optional().describe("Whether this time is billable (default from task settings)"),
       }),
     },
-    async ({ TaskID, Date: date, Hours, Comment, Billable }) => {
+    async ({ TaskID, Date: date, Hours, Comment, JiraId, Billable }) => {
       const me = await client.get<UserMeResponse>("/v1/user/me");
+      const billable = Billable !== false;
       const body: Record<string, unknown> = {
         ID: randomUUID(),
         TaskID,
         UserID: me.Properties.UserID,
         Date: `${date}T00:00:00`,
         Hours,
+        Minutes: Math.round(Hours * 60),
+        BillableHours: billable ? Hours : 0,
+        BillableMinutes: billable ? Math.round(Hours * 60) : 0,
         GroupType: 1, // 1 = Project
       };
       if (Comment !== undefined) body.Comment = Comment;
-      if (Billable !== undefined) body.Billable = Billable;
+      if (JiraId !== undefined) body.AdditionalComment = JiraId;
+      body.Billable = billable;
 
       const data = await client.post("/v1/time-registration", body);
       return {
