@@ -8,12 +8,17 @@
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
   "files": ["dist"],
-  "keywords": [],
-  "author": "",
+  "keywords": ["mcp", "timelog", "time-tracking"],
+  "author": "Amoeslund",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amoeslund/Timelog-MCP-server.git"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
     "zod": "^3.25.76"
