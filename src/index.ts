@@ -15,6 +15,7 @@ import { registerDeleteTimeRegistration } from "./tools/delete-registration.js";
 import { registerSearchAbsenceCodes } from "./tools/search-absence-codes.js";
 import { registerCreateAbsenceRegistration } from "./tools/create-absence-registration.js";
 import { registerSubmitTimesheet } from "./tools/submit-timesheet.js";
+import { registerGetLegalEntities } from "./tools/legal-entity.js";
 
 const config = loadConfig();
 const client = new TimelogClient(config);
@@ -36,6 +37,7 @@ registerDeleteTimeRegistration(server, client);
 registerSearchAbsenceCodes(server, client);
 registerCreateAbsenceRegistration(server, client);
 registerSubmitTimesheet(server, client);
+registerGetLegalEntities(server, client);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);

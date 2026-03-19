@@ -1,23 +1,37 @@
 # Timelog MCP Server
 
-An [MCP](https://modelcontextprotocol.io) server that exposes the [Timelog](https://www.timelog.com) time registration API as tools for Claude.
+An [MCP](https://modelcontextprotocol.io) server that exposes the [Timelog](https://www.timelog.com) time registration API as tools for Claude. It lets you view, create, and manage time registrations, absences, and timesheet approvals through natural language.
+
+## Capabilities
+
+- **View time registrations** — by week or arbitrary date range, including financial/billable data
+- **Create, update, and delete** time registrations on any task you have access to
+- **Absence management** — search absence codes and register vacation, sick leave, etc.
+- **Timesheet approval** — check submission status and submit timesheets, with filtering by employee, department, approver, or legal entity
+- **Organization** — look up legal entities and the current user profile
+- **Task search** — find tasks to register time on by name or number
 
 ## Tools
 
 | Tool | Description |
 |------|-------------|
-| `get_current_user` | Get the authenticated user's profile |
-| `get_weekly_registrations` | Get time entries for a specific week |
-| `get_registrations_by_date_range` | Get time entries for an arbitrary date range |
-| `get_financial_data` | Get billable/invoice status for registrations |
-| `get_timesheet_status` | Get approval/submission status of timesheets |
-| `search_tasks` | Search for tasks you can register time on |
-| `create_time_registration` | Register hours on a task |
-| `update_time_registration` | Modify an existing registration |
-| `delete_time_registration` | Delete a registration |
+| **User & Organization** | |
+| `get_current_user` | Get the authenticated user's profile (name, email, department) |
+| `get_legal_entities` | Get all legal entities in the organization (ID, name, currency, country) |
+| **Time Registrations** | |
+| `get_weekly_registrations` | Get time entries for a specific week (provide the Monday date) |
+| `get_registrations_by_date_range` | Get time entries between two dates |
+| `get_financial_data` | Get billable/invoice status for registrations in a date range |
+| `search_tasks` | Search for tasks you can register time on by name or number |
+| `create_time_registration` | Register hours on a task with optional comment, billable flag, and JIRA ID |
+| `update_time_registration` | Modify an existing registration (hours, comment, date, billable, JIRA ID) |
+| `delete_time_registration` | Delete a registration by its GUID |
+| **Absence** | |
 | `search_absence_codes` | Search for absence codes (e.g. Ferie, Sygdom) |
-| `create_absence_registration` | Register absence (vacation, sick leave, etc.) by hours or full day |
-| `submit_timesheet` | Submit timesheet for approval for a date range |
+| `create_absence_registration` | Register absence by full day or hours |
+| **Timesheet Approval** | |
+| `get_timesheet_status` | Get weekly approval/submission status — filterable by employee, department, approver, or legal entity |
+| `submit_timesheet` | Submit a timesheet for approval for a date range |
 
 ## Setup
 
