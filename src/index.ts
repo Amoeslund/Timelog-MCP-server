@@ -12,6 +12,8 @@ import { registerSearchTasks } from "./tools/search-tasks.js";
 import { registerCreateTimeRegistration } from "./tools/create-registration.js";
 import { registerUpdateTimeRegistration } from "./tools/update-registration.js";
 import { registerDeleteTimeRegistration } from "./tools/delete-registration.js";
+import { registerSearchAbsenceCodes } from "./tools/search-absence-codes.js";
+import { registerCreateAbsenceRegistration } from "./tools/create-absence-registration.js";
 
 const config = loadConfig();
 const client = new TimelogClient(config);
@@ -30,6 +32,8 @@ registerSearchTasks(server, client);
 registerCreateTimeRegistration(server, client);
 registerUpdateTimeRegistration(server, client);
 registerDeleteTimeRegistration(server, client);
+registerSearchAbsenceCodes(server, client);
+registerCreateAbsenceRegistration(server, client);
 
 const transport = new StdioServerTransport();
 await server.connect(transport);
