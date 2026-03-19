@@ -6,17 +6,32 @@ export function registerGetTimesheetStatus(server: McpServer, client: TimelogCli
   server.registerTool(
     "get_timesheet_status",
     {
-      description: "Get approval/submission status of timesheets for a date range.",
+      description:
+        "Get weekly timesheet status. Defaults to the authenticated user. Pass userId to check a specific employee, or omit to get all employees (manager view). Can also filter by departmentId or approverId.",
       inputSchema: z.object({
         startDate: z.string().describe("Start date YYYY-MM-DD"),
         endDate: z.string().describe("End date YYYY-MM-DD"),
+        userId: z.number().int().optional().describe("Filter by employee UserID. Omit for all employees."),
+        departmentId: z.number().int().optional().describe("Filter by department ID"),
+        approverId: z.number().int().optional().describe("Filter by approver UserID"),
       }),
     },
-    async ({ startDate, endDate }) => {
-      const data = await client.get("/v1/approval/timesheets/get-status-by-dates", {
-        startDate,
-        endDate,
-      });
+    async ({ startDate, endDate, userId, departmentId, approverId }) => {
+      let resolvedUserId = userId;
+      if (resolvedUserId === undefined) {
+        const me = await client.get<{ Properties: { UserID: number } }>("/v1/user/me");
+        resolvedUserId = me.Properties.UserID;
+      }
+
+      const params: Record<string, string> = {
+        startDate: `${startDate}T00:00:00`,
+        endDate: `${endDate}T00:00:00`,
+        userId: String(resolvedUserId),
+      };
+      if (departmentId !== undefined) params.departmentId = String(departmentId);
+      if (approverId !== undefined) params.approverId = String(approverId);
+
+      const data = await client.get("/v1/timesheet-status/weekly", params);
       return {
         content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }],
       };

@@ -12,11 +12,15 @@ export class TimelogClient {
     };
   }
 
-  async get<T>(path: string, params?: Record<string, string>): Promise<T> {
+  async get<T>(path: string, params?: Record<string, string | string[]>): Promise<T> {
     const url = new URL(`${this.baseUrl}${path}`);
     if (params) {
       for (const [key, value] of Object.entries(params)) {
-        url.searchParams.set(key, value);
+        if (Array.isArray(value)) {
+          for (const v of value) url.searchParams.append(key, v);
+        } else {
+          url.searchParams.set(key, value);
+        }
       }
     }
 
