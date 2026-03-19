@@ -15,6 +15,9 @@ An [MCP](https://modelcontextprotocol.io) server that exposes the [Timelog](http
 | `create_time_registration` | Register hours on a task |
 | `update_time_registration` | Modify an existing registration |
 | `delete_time_registration` | Delete a registration |
+| `search_absence_codes` | Search for absence codes (e.g. Ferie, Sygdom) |
+| `create_absence_registration` | Register absence (vacation, sick leave, etc.) by hours or full day |
+| `submit_timesheet` | Submit timesheet for approval for a date range |
 
 ## Setup
 
