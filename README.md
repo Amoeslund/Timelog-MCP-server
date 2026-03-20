@@ -129,6 +129,19 @@ Submit a timesheet for approval for a date range (e.g. a full week).
 | `comment` | string | No | Comment for the submission |
 | `employeeUserId` | integer | No | UserID of the employee to submit for (defaults to authenticated user) |
 
+### Manager Workflows
+
+#### Finding and closing open timesheets
+
+Use `get_timesheet_status` without a `userId` to get the submission status for all employees in a period. Filter by `departmentId`, `approverId`, or `legalEntityId` to narrow the scope.
+
+Once you've identified employees with open timesheets, use `submit_timesheet` with `employeeUserId` to submit on their behalf.
+
+**Example prompts:**
+> "Show me everyone who hasn't submitted their timesheet this week"
+> "Submit this week's timesheet for user 1234"
+> "Submit all open timesheets for department 5 this week"
+
 ## Setup
 
 ### Via npx (recommended)
