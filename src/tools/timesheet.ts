@@ -11,10 +11,10 @@ export function registerGetTimesheetStatus(server: McpServer, client: TimelogCli
       inputSchema: z.object({
         startDate: z.string().describe("Start date YYYY-MM-DD"),
         endDate: z.string().describe("End date YYYY-MM-DD"),
-        userId: z.number().int().optional().describe("Filter by employee UserID. Omit for all employees."),
-        departmentId: z.number().int().optional().describe("Filter by department ID"),
-        approverId: z.number().int().optional().describe("Filter by approver UserID"),
-        legalEntityId: z.number().int().optional().describe("Filter by legal entity ID"),
+        userId: z.coerce.number().int().optional().describe("Filter by employee UserID. Omit for all employees."),
+        departmentId: z.coerce.number().int().optional().describe("Filter by department ID"),
+        approverId: z.coerce.number().int().optional().describe("Filter by approver UserID"),
+        legalEntityId: z.coerce.number().int().optional().describe("Filter by legal entity ID"),
       }),
     },
     async ({ startDate, endDate, userId, departmentId, approverId, legalEntityId }) => {

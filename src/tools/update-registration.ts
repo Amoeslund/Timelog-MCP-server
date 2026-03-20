@@ -8,10 +8,10 @@ export function registerUpdateTimeRegistration(server: McpServer, client: Timelo
     {
       description: "Update an existing time registration (hours, comment, date, billable status).",
       inputSchema: z.object({
-        TimeRegistrationID: z.number().int().describe("Time registration ID to update"),
-        TaskID: z.number().int().describe("Task identifier"),
+        TimeRegistrationID: z.coerce.number().int().describe("Time registration ID to update"),
+        TaskID: z.coerce.number().int().describe("Task identifier"),
         Date: z.string().optional().describe("New date, format YYYY-MM-DD"),
-        Hours: z.number().optional().describe("New hours value"),
+        Hours: z.coerce.number().optional().describe("New hours value"),
         Comment: z.string().optional().describe("New comment"),
         JiraId: z.string().optional().describe("JIRA ticket ID (e.g. SGI-82108)"),
         Billable: z.boolean().optional().describe("Whether this time is billable"),
