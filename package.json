@@ -1,6 +1,6 @@
 {
   "name": "@amoeslund/timelog-mcp",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "MCP server for Timelog time registrations",
   "type": "module",
   "bin": {
