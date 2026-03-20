@@ -15,12 +15,17 @@ export function registerSubmitTimesheet(server: McpServer, client: TimelogClient
       }),
     },
     async ({ startDate, endDate, comment, employeeUserId }) => {
+      let userId = employeeUserId;
+      if (userId === undefined) {
+        const me = await client.get<{ Properties: { UserID: number } }>("/v1/user/me");
+        userId = me.Properties.UserID;
+      }
       const body: Record<string, unknown> = {
         StartDate: `${startDate}T00:00:00`,
         EndDate: `${endDate}T00:00:00`,
+        EmployeeUserID: userId,
       };
       if (comment !== undefined) body.Comment = comment;
-      if (employeeUserId !== undefined) body.EmployeeUserID = employeeUserId;
 
       const data = await client.post("/v1/approval/timesheets/submit-period", body);
       return {
