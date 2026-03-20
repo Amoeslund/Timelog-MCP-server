@@ -9,9 +9,9 @@ export function registerCreateAbsenceRegistration(server: McpServer, client: Tim
       description:
         "Create an absence registration (e.g. vacation, sick leave). Use search_absence_codes to find the AbsenceCodeID. Registers a full day by default; specify Hours for partial days.",
       inputSchema: z.object({
-        AbsenceCodeID: z.coerce.number().int().describe("Absence code identifier (from search_absence_codes)"),
+        AbsenceCodeID: z.union([z.number(), z.string().transform(Number)]).describe("Absence code identifier (from search_absence_codes)"),
         Date: z.string().describe("Date of the absence, format YYYY-MM-DD"),
-        Hours: z.coerce.number().optional().describe("Hours to register. If omitted, registers a full working day."),
+        Hours: z.union([z.number(), z.string().transform(Number)]).optional().describe("Hours to register. If omitted, registers a full working day."),
         Comment: z.string().optional().describe("Comment for the registration"),
       }),
     },

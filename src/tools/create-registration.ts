@@ -14,9 +14,9 @@ export function registerCreateTimeRegistration(server: McpServer, client: Timelo
       description:
         "Create a new time registration on a task. Use search_tasks first to find the TaskID.",
       inputSchema: z.object({
-        TaskID: z.coerce.number().int().describe("Task identifier (from search_tasks)"),
+        TaskID: z.union([z.number(), z.string().transform(Number)]).describe("Task identifier (from search_tasks)"),
         Date: z.string().describe("Date of the registration, format YYYY-MM-DD"),
-        Hours: z.coerce.number().describe("Number of hours to register"),
+        Hours: z.union([z.number(), z.string().transform(Number)]).describe("Number of hours to register"),
         Comment: z.string().optional().describe("Comment for the registration"),
         JiraId: z.string().optional().describe("JIRA ticket ID (e.g. XXX-1234)"),
         Billable: z.boolean().optional().describe("Whether this time is billable (default from task settings)"),

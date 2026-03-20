@@ -11,7 +11,7 @@ export function registerSubmitTimesheet(server: McpServer, client: TimelogClient
         startDate: z.string().describe("Start date YYYY-MM-DD"),
         endDate: z.string().describe("End date YYYY-MM-DD"),
         comment: z.string().optional().describe("Optional comment for the submission"),
-        employeeUserId: z.coerce.number().int().optional().describe("UserID of the employee to submit for. Defaults to the authenticated user."),
+        employeeUserId: z.union([z.number(), z.string().transform(Number)]).optional().describe("UserID of the employee to submit for. Defaults to the authenticated user."),
       }),
     },
     async ({ startDate, endDate, comment, employeeUserId }) => {
