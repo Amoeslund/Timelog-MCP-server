@@ -5,56 +5,79 @@ on:
     branches: [main]
 
 jobs:
-  check-version:
+  prepare:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
-      changed: ${{ steps.check.outputs.changed }}
+      should_publish: ${{ steps.check.outputs.should_publish }}
       version: ${{ steps.check.outputs.version }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 2
+          token: ${{ secrets.GITHUB_TOKEN }}
       - id: check
         run: |
+          set -euo pipefail
           CURRENT=$(node -p "require('./package.json').version")
           PREVIOUS=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version")
-          echo "version=$CURRENT" >> $GITHUB_OUTPUT
           if [ "$CURRENT" != "$PREVIOUS" ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "version=$CURRENT" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          AUTHOR=$(git log -1 --format='%an')
+          SUBJECT=$(git log -1 --format='%s')
+          if [ "$AUTHOR" = "dependabot[bot]" ] || echo "$SUBJECT" | grep -qE '^(Bump|chore\(deps\))'; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            NEW=$(node -e "const v=require('./package.json').version.split('.').map(Number);v[2]++;console.log(v.join('.'))")
+            node -e "const fs=require('fs');const p=require('./package.json');p.version='$NEW';fs.writeFileSync('package.json', JSON.stringify(p, null, 2)+'\n')"
+            git add package.json
+            git commit -m "chore: bump version to $NEW [skip ci]"
+            git push origin HEAD:main
+            echo "should_publish=true" >> "$GITHUB_OUTPUT"
+            echo "version=$NEW" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "should_publish=false" >> "$GITHUB_OUTPUT"
           fi
 
   publish-github:
-    needs: check-version
-    if: needs.check-version.outputs.changed == 'true'
+    needs: prepare
+    if: needs.prepare.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
       - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://npm.pkg.github.com
       - run: npm ci
       - run: npm run build
+      - run: npm test
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-release:
-    needs: [check-version, publish-github]
-    if: needs.check-version.outputs.changed == 'true'
+    needs: [prepare, publish-github]
+    if: needs.prepare.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: main
       - run: |
-          gh release create v${{ needs.check-version.outputs.version }} \
-            --title "v${{ needs.check-version.outputs.version }}" \
+          gh release create v${{ needs.prepare.outputs.version }} \
+            --title "v${{ needs.prepare.outputs.version }}" \
             --generate-notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
