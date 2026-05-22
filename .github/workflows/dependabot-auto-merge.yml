@@ -13,10 +13,24 @@ jobs:
     steps:
       - name: Fetch Dependabot metadata
         id: meta
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
 
-      - name: Approve and enable auto-merge for patch and minor updates
-        if: steps.meta.outputs.update-type == 'version-update:semver-patch' || steps.meta.outputs.update-type == 'version-update:semver-minor'
+      - name: Decide if PR is safe to auto-merge
+        id: safe
+        env:
+          UPDATED_JSON: ${{ steps.meta.outputs.updated-dependencies-json }}
+        run: |
+          set -euo pipefail
+          COUNT=$(jq 'length' <<< "$UPDATED_JSON")
+          HAS_MAJOR=$(jq 'any(.updateType == "version-update:semver-major")' <<< "$UPDATED_JSON")
+          if [ "$COUNT" -gt 0 ] && [ "$HAS_MAJOR" = "false" ]; then
+            echo "safe=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "safe=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Approve and enable auto-merge
+        if: steps.safe.outputs.safe == 'true'
         run: |
           gh pr review --approve "$PR_URL"
           gh pr merge --auto --squash "$PR_URL"
