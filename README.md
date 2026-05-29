@@ -2,6 +2,12 @@
 
 An [MCP](https://modelcontextprotocol.io) server that exposes the [Timelog](https://www.timelog.com) time registration API as tools for Claude. It lets you view, create, and manage time registrations, absences, and timesheet approvals through natural language.
 
+## Requirements
+
+**Node.js 18 or higher** — the server uses the native `fetch` global, which was introduced in Node 18. Running on an older version will exit immediately with a clear error message.
+
+The included `.nvmrc` and `bin/run.sh` wrapper target **Node 22**, which is the recommended version for running this server.
+
 ## Capabilities
 
 - **View time registrations** — by week or arbitrary date range, including financial/billable data
@@ -163,22 +169,47 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
 }
 ```
 
+The package includes a wrapper script (`bin/run.sh`) that sources nvm at startup and runs the server with the version declared in `.nvmrc` (Node 22). This means the correct Node version is selected on every run, regardless of what your shell's default is.
+
+> **nvm users:** MCP servers run as subprocesses and don't inherit nvm shell hooks, so your shell's active version doesn't apply. The wrapper handles this automatically. If you prefer to use `npx` directly without the wrapper, make sure your nvm default is Node 18+:
+> ```bash
+> nvm alias default 22
+> ```
+
 ### From source
 
 ```bash
 git clone git@github.com:Amoeslund/Timelog-MCP-server.git
 cd Timelog-MCP-server
+nvm use        # picks up .nvmrc (Node 22)
 npm install
 npm run build
 ```
 
-Then point your MCP config at the built file:
+Then point your MCP config at the wrapper script so the correct Node version is used on every launch:
 
 ```json
 {
   "mcpServers": {
     "timelog": {
-      "command": "node",
+      "command": "/path/to/Timelog-MCP-server/bin/run.sh",
+      "args": [],
+      "env": {
+        "TIMELOG_PAT": "<your-personal-access-token>",
+        "TIMELOG_BASE_URL": "https://app[X].timelog.com/<your-account>/api"
+      }
+    }
+  }
+}
+```
+
+Alternatively, if you want to call `node` directly, use an absolute path to a Node 18+ binary:
+
+```json
+{
+  "mcpServers": {
+    "timelog": {
+      "command": "/path/to/node",
       "args": ["/path/to/Timelog-MCP-server/dist/index.js"],
       "env": {
         "TIMELOG_PAT": "<your-personal-access-token>",
