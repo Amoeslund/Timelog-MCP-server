@@ -17,6 +17,15 @@ import { registerCreateAbsenceRegistration } from "./tools/create-absence-regist
 import { registerSubmitTimesheet } from "./tools/submit-timesheet.js";
 import { registerGetLegalEntities } from "./tools/legal-entity.js";
 
+const [major] = process.versions.node.split(".").map(Number);
+if (major < 18) {
+  process.stderr.write(
+    `[timelog-mcp] Requires Node.js 18+. Running: ${process.version}\n` +
+      `Fix: set nvm default with 'nvm alias default 22'\n`,
+  );
+  process.exit(1);
+}
+
 const config = loadConfig();
 const client = new TimelogClient(config);
 
