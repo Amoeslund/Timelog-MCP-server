@@ -4,7 +4,7 @@
   "description": "MCP server for Timelog time registrations",
   "type": "module",
   "bin": {
-    "timelog-mcp": "dist/index.js"
+    "timelog-mcp": "bin/run.sh"
   },
   "scripts": {
     "build": "tsc && chmod 755 dist/index.js",
@@ -14,7 +14,8 @@
     "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "keywords": [
     "mcp",
