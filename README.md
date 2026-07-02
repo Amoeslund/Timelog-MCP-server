@@ -150,7 +150,18 @@ Once you've identified employees with open timesheets, use `submit_timesheet` wi
 
 ## Setup
 
-### Via npx (recommended)
+### As a Claude Code plugin (recommended)
+
+This repo doubles as a Claude Code plugin marketplace. Add it once, then install the plugin:
+
+```
+/plugin marketplace add Amoeslund/Timelog-MCP-server
+/plugin install timelog@timelog-mcp
+```
+
+Claude Code will prompt for your **Timelog Personal Access Token** and **API base URL** during install and wire up the MCP server for you (it runs the published `timelog-mcp` package via `npx`). No manual `.mcp.json` editing required. See [Configuration](#configuration) for how to obtain those values.
+
+### Via npx (manual)
 
 Add to your Claude Code `.mcp.json` or Claude Desktop config:
 

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "timelog",
+  "displayName": "Timelog",
+  "version": "1.8.0",
+  "description": "MCP server for Timelog time registrations — view, create, and manage time registrations, absences, and timesheet approvals through natural language.",
+  "author": {
+    "name": "Amoeslund"
+  },
+  "homepage": "https://github.com/Amoeslund/Timelog-MCP-server",
+  "repository": "https://github.com/Amoeslund/Timelog-MCP-server",
+  "license": "ISC",
+  "keywords": ["mcp", "timelog", "time-tracking"],
+  "userConfig": {
+    "timelog_pat": {
+      "type": "string",
+      "title": "Timelog Personal Access Token",
+      "description": "Generate one at https://login.timelog.com/personaltoken",
+      "sensitive": true,
+      "required": true
+    },
+    "timelog_base_url": {
+      "type": "string",
+      "title": "Timelog API base URL",
+      "description": "Follows the pattern https://app[X].timelog.com/<your-account>/api",
+      "required": true
+    }
+  },
+  "mcpServers": {
+    "timelog": {
+      "command": "npx",
+      "args": ["-y", "timelog-mcp"],
+      "env": {
+        "TIMELOG_PAT": "${user_config.timelog_pat}",
+        "TIMELOG_BASE_URL": "${user_config.timelog_base_url}"
+      }
+    }
+  }
+}
