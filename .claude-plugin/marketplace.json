@@ -1,0 +1,23 @@
+{
+  "name": "timelog-mcp",
+  "owner": {
+    "name": "Amoeslund"
+  },
+  "description": "Marketplace for the Timelog MCP server plugin.",
+  "plugins": [
+    {
+      "name": "timelog",
+      "source": "./",
+      "description": "MCP server for Timelog time registrations — view, create, and manage time registrations, absences, and timesheet approvals through natural language.",
+      "version": "1.8.0",
+      "author": {
+        "name": "Amoeslund"
+      },
+      "homepage": "https://github.com/Amoeslund/Timelog-MCP-server",
+      "repository": "https://github.com/Amoeslund/Timelog-MCP-server",
+      "license": "ISC",
+      "keywords": ["mcp", "timelog", "time-tracking"],
+      "category": "productivity"
+    }
+  ]
+}
