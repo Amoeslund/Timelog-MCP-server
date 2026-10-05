@@ -9,7 +9,7 @@
       "name": "timelog",
       "source": "./",
       "description": "MCP server for Timelog time registrations — view, create, and manage time registrations, absences, and timesheet approvals through natural language.",
-      "version": "1.8.0",
+      "version": "1.8.1",
       "author": {
         "name": "Amoeslund"
       },

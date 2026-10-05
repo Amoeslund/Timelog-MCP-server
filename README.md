@@ -170,7 +170,7 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
   "mcpServers": {
     "timelog": {
       "command": "npx",
-      "args": ["-y", "timelog-mcp@1.5.0"],
+      "args": ["-y", "timelog-mcp@1.8.1"],
       "env": {
         "TIMELOG_PAT": "<your-personal-access-token>",
         "TIMELOG_BASE_URL": "https://app[X].timelog.com/<your-account>/api"
