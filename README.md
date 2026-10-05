@@ -150,7 +150,18 @@ Once you've identified employees with open timesheets, use `submit_timesheet` wi
 
 ## Setup
 
-### Via npx (recommended)
+### As a Claude Code plugin (recommended)
+
+This repo doubles as a Claude Code plugin marketplace. Add it once, then install the plugin:
+
+```
+/plugin marketplace add Amoeslund/Timelog-MCP-server
+/plugin install timelog@timelog-mcp
+```
+
+Claude Code will prompt for your **Timelog Personal Access Token** and **API base URL** during install and wire up the MCP server for you (it runs a pinned version of the published `timelog-mcp` package via `npx`). No manual `.mcp.json` editing required. See [Configuration](#configuration) for how to obtain those values.
+
+### Via npx (manual)
 
 Add to your Claude Code `.mcp.json` or Claude Desktop config:
 
@@ -159,7 +170,7 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
   "mcpServers": {
     "timelog": {
       "command": "npx",
-      "args": ["-y", "timelog-mcp"],
+      "args": ["-y", "timelog-mcp@1.5.0"],
       "env": {
         "TIMELOG_PAT": "<your-personal-access-token>",
         "TIMELOG_BASE_URL": "https://app[X].timelog.com/<your-account>/api"
@@ -168,6 +179,8 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
   }
 }
 ```
+
+> **Pin the version.** Always reference an exact version (`timelog-mcp@<version>`) in `args` rather than bare `timelog-mcp`. An unpinned `npx -y` silently pulls whatever is tagged `latest` on every launch, which exposes you to unreviewed or compromised releases. Check the available versions with `npm view timelog-mcp versions` and bump the pin deliberately when you upgrade.
 
 The package includes a wrapper script (`bin/run.sh`) that sources nvm at startup and runs the server with the version declared in `.nvmrc` (Node 22). This means the correct Node version is selected on every run, regardless of what your shell's default is.
 
