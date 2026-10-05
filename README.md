@@ -148,6 +148,15 @@ Once you've identified employees with open timesheets, use `submit_timesheet` wi
 > "Submit this week's timesheet for user 1234"
 > "Submit all open timesheets for department 5 this week"
 
+## Skills
+
+The plugin ships two workflow skills for IMPACT employees. They need the Fellow, Slack and IMPACT Datawarehouse MCP connectors; the Atlassian MCP server is optional and used for Jira when available.
+
+| Skill | What it does |
+|---|---|
+| `/timelog-daily` | Logs today's hours from Fellow meetings, Slack, git commits, Claude sessions and Jira. Matches the day's total and customers to your allocation in Planning and creates the registrations without asking. On the last workday of the month it also runs `/timelog-weekly`. |
+| `/timelog-weekly` | Checks each day this week totals 7.5h (0h on holidays), fixes gaps and backfills missing Jira IDs. It shows the week summary, sends it to you on Slack, then submits the timesheet. |
+
 ## Setup
 
 ### As a Claude Code plugin (recommended)
