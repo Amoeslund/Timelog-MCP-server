@@ -29,7 +29,7 @@
   "mcpServers": {
     "timelog": {
       "command": "npx",
-      "args": ["-y", "timelog-mcp"],
+      "args": ["-y", "timelog-mcp@1.5.0"],
       "env": {
         "TIMELOG_PAT": "${user_config.timelog_pat}",
         "TIMELOG_BASE_URL": "${user_config.timelog_base_url}"
