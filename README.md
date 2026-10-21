@@ -148,6 +148,107 @@ Once you've identified employees with open timesheets, use `submit_timesheet` wi
 > "Submit this week's timesheet for user 1234"
 > "Submit all open timesheets for department 5 this week"
 
+## Hosted on Azure (recommended)
+
+IMPACT runs this server centrally on Azure App Service, like the other IMPACT MCP connectors, so
+users install nothing locally. Each user signs in with their own Timelog personal access token,
+so Timelog's own permissions apply per person.
+
+### Connecting a client
+
+The server implements OAuth with dynamic client registration, so a client needs only the URL.
+
+**Claude.ai / Claude desktop:** Settings → Connectors → *Add custom connector* →
+`https://impact-timelog-mcp-connector.azurewebsites.net/mcp`
+
+**Claude Code:**
+
+```bash
+claude mcp add --transport http timelog https://impact-timelog-mcp-connector.azurewebsites.net/mcp
+```
+
+Then run `/mcp` and choose **Authenticate**. A browser page asks for your Timelog personal access
+token (create one at https://login.timelog.com/personaltoken). That is the only time you enter it.
+
+### How sign-in works
+
+- `/authorize` shows a page where the user pastes their PAT. The server checks it against Timelog
+  (`GET /v1/user/me`) before continuing.
+- The access token the client receives is the PAT **encrypted** (AES-256-GCM) with a key only the
+  server holds. Client ids and authorization codes are sealed the same way.
+- So the server stores nothing: no token table, no database. Restarts and scale-out do not sign
+  anyone out. The only secret in Azure is the encryption key, in Key Vault.
+- Access tokens expire after `ACCESS_TOKEN_TTL_DAYS` (default 30); the user then pastes a PAT again.
+- To disconnect, revoke the PAT in Timelog. Rotating the encryption key signs every user out.
+- Redirect URIs are limited to `ALLOWED_REDIRECT_HOSTS` (default: claude.ai, claude.com and
+  loopback for Claude Code), so a third-party site cannot register itself to collect PATs.
+
+### Azure resources (`infra/main.bicep`)
+
+| Resource | Purpose |
+|---|---|
+| App Service plan (Linux, B1) + Web App | Runs `node dist/http.js` on Node 22 |
+| User-assigned managed identity | Reads the encryption key from Key Vault |
+| Key Vault (RBAC) | Holds `token-encryption-key` |
+| Log Analytics workspace | Console, HTTP and platform logs |
+
+Health check: `https://<site>.azurewebsites.net/healthz` → `{"status":"ok"}`.
+
+### Deploying
+
+Deploys run from GitHub Actions: **Deploy to test** / **Deploy to production** (manual
+dispatch, with a "code only" option that skips the Bicep pass). They authenticate to Azure with
+OIDC, so no Azure secret is stored in GitHub.
+
+One-time setup per environment (`test`, `prod`):
+
+1. **Resource group** in Azure (ask IT for it).
+2. **Entra app registration** with a federated credential for
+   `repo:<owner>/<repo>:environment:<test|prod>`, and on the resource group the roles
+   **Contributor** and **Role Based Access Control Administrator** (the template assigns the
+   identity's Key Vault role).
+3. **GitHub Environment** with:
+
+   | Kind | Name | Value |
+   |---|---|---|
+   | Variable | `AZURE_CLIENT_ID` | App registration client id |
+   | Variable | `AZURE_TENANT_ID` | Tenant id |
+   | Variable | `AZURE_SUBSCRIPTION_ID` | Subscription id |
+   | Variable | `AZURE_RESOURCE_GROUP` | Resource group name |
+   | Variable | `SITE_NAME` | e.g. `impact-timelog-mcp-connector` (test: `impact-timelog-mcp-connector-test`) |
+   | Variable | `TIMELOG_BASE_URL` | `https://app[X].timelog.com/<account>/api` |
+   | Secret | `TOKEN_ENCRYPTION_KEY` | `openssl rand -base64 32` — keep it stable |
+
+To deploy by hand instead: `az login`, then run `scripts/deploy.sh` with the same values as
+environment variables.
+
+### Running the hosted server locally
+
+```bash
+npm install && npm run build
+TIMELOG_BASE_URL=https://app[X].timelog.com/<account>/api \
+PUBLIC_BASE_URL=http://localhost:8080 \
+TOKEN_ENCRYPTION_KEY=$(openssl rand -base64 32) \
+npm run start:http
+```
+
+### Hosted server environment variables
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `TIMELOG_BASE_URL` | *(required)* | Timelog API base URL for the organisation |
+| `PUBLIC_BASE_URL` | *(required)* | Public origin, used in OAuth discovery |
+| `TOKEN_ENCRYPTION_KEY` | *(required)* | Base64 32-byte AES key (Key Vault reference in Azure) |
+| `ACCESS_TOKEN_TTL_DAYS` | `30` | Access token lifetime |
+| `ALLOWED_REDIRECT_HOSTS` | `claude.ai,claude.com,localhost,127.0.0.1` | Hosts a client may register as redirect target |
+| `TRUSTED_PROXY_HOPS` | `0` | Reverse proxies in front (Azure sets `1`) |
+| `PORT` | `8080` | Injected by App Service |
+
+## Local install (stdio, legacy)
+
+The options below run the server on your own machine. They still work, but the hosted server
+above is the supported way to use it at IMPACT.
+
 ## Setup
 
 ### As a Claude Code plugin (recommended)

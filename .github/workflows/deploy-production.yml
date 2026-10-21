@@ -1,0 +1,22 @@
+# Manual on purpose: a deploy restarts the site. Pick "code only" when no template changed.
+name: Deploy to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      code_only:
+        description: Deploy code only (skip infrastructure)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: prod
+      code_only: ${{ inputs.code_only }}
+    secrets: inherit

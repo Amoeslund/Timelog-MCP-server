@@ -1,0 +1,83 @@
+# Reusable deployment to Azure App Service. deploy-test.yml and deploy-production.yml call it with
+# a different GitHub Environment, which holds everything that differs between the two.
+#
+# Environment variables: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID,
+#   AZURE_RESOURCE_GROUP, SITE_NAME, TIMELOG_BASE_URL
+# Environment secrets:   TOKEN_ENCRYPTION_KEY
+name: Deploy App Service
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      code_only:
+        description: Skip the Bicep pass. A template change needs a full deploy.
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  # azure/login exchanges this job's OIDC token for an Azure token; nothing long-lived in GitHub.
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    # Two deploys to one site race; queue rather than cancel a half-applied Bicep pass.
+    concurrency:
+      group: deploy-app-service-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the environment is configured
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+          CODE_ONLY: ${{ inputs.code_only }}
+          AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          SITE_NAME: ${{ vars.SITE_NAME }}
+          TIMELOG_BASE_URL: ${{ vars.TIMELOG_BASE_URL }}
+          TOKEN_ENCRYPTION_KEY: ${{ secrets.TOKEN_ENCRYPTION_KEY }}
+        run: |
+          required="AZURE_CLIENT_ID AZURE_TENANT_ID AZURE_SUBSCRIPTION_ID AZURE_RESOURCE_GROUP SITE_NAME"
+          [ "$CODE_ONLY" = "true" ] || required="$required TIMELOG_BASE_URL TOKEN_ENCRYPTION_KEY"
+          missing=""
+          for name in $required; do [ -n "${!name}" ] || missing="$missing $name"; done
+          if [ -n "$missing" ]; then
+            echo "::error::GitHub Environment '$TARGET_ENVIRONMENT' is missing:$missing. See 'Hosting on Azure' in README.md."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
+        env:
+          AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          SITE_NAME: ${{ vars.SITE_NAME }}
+          TIMELOG_BASE_URL: ${{ vars.TIMELOG_BASE_URL }}
+          TOKEN_ENCRYPTION_KEY: ${{ secrets.TOKEN_ENCRYPTION_KEY }}
+          CODE_ONLY: ${{ inputs.code_only }}
+        run: ./scripts/deploy.sh
+
+      - name: Sign out of Azure
+        if: always()
+        run: az logout --only-show-errors || true
