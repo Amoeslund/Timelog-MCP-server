@@ -187,7 +187,7 @@ test("full flow: PAT -> code -> token -> tool call with that PAT", async () => {
 
     const timelogCalls = [];
     globalThis.fetch = async (url, opts) => {
-      if (String(url).startsWith("https://timelog.example")) {
+      if (new URL(String(url)).host === "timelog.example") {
         timelogCalls.push({ url: String(url), auth: opts.headers.Authorization });
         return new Response(JSON.stringify({ Name: "Ada" }), { status: 200 });
       }
