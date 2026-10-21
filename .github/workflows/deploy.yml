@@ -59,6 +59,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      # .npmrc min-release-age needs npm >= 11; Node 22 ships npm 10.
+      - run: npm install -g npm@11.20.0
 
       - run: npm ci
       - run: npm test

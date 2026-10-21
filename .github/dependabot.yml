@@ -13,6 +13,9 @@ updates:
     # Check the npm registry for updates every day (weekdays)
     schedule:
       interval: "weekly"
+    # Supply-chain floor: only propose versions published at least 3 days ago.
+    cooldown:
+      default-days: 3
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -21,3 +24,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Supply-chain floor: only propose versions published at least 3 days ago.
+    cooldown:
+      default-days: 3
