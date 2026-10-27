@@ -182,9 +182,9 @@ Add to your Claude Code `.mcp.json` or Claude Desktop config:
 
 > **Pin the version.** Always reference an exact version (`timelog-mcp@<version>`) in `args` rather than bare `timelog-mcp`. An unpinned `npx -y` silently pulls whatever is tagged `latest` on every launch, which exposes you to unreviewed or compromised releases. Check the available versions with `npm view timelog-mcp versions` and bump the pin deliberately when you upgrade.
 
-The package includes a wrapper script (`bin/run.sh`) that sources nvm at startup and runs the server with the version declared in `.nvmrc` (Node 22). This means the correct Node version is selected on every run, regardless of what your shell's default is.
+`npx` runs the server with whatever `node` is first on the MCP client's `PATH`. It exits with a clear error if that is older than Node 18.
 
-> **nvm users:** MCP servers run as subprocesses and don't inherit nvm shell hooks, so your shell's active version doesn't apply. The wrapper handles this automatically. If you prefer to use `npx` directly without the wrapper, make sure your nvm default is Node 18+:
+> **nvm users:** MCP servers run as subprocesses and don't inherit nvm shell hooks, so your shell's active version doesn't apply. Make sure your nvm default is Node 18+, or run from source with the `bin/run.sh` wrapper (below), which selects the `.nvmrc` version on every launch:
 > ```bash
 > nvm alias default 22
 > ```
